@@ -1,0 +1,2 @@
+a = str({'HOLMES-OBITO / INTEL i5-12400F / ASUS Dual GeForce RTX 4060 Ti OC 8GB WHITE / 16GB RAM / 500GB M.2 SSD Gaming Bilgisayar': [{}, 'https://www.gaming.gen.tr/wp-content/uploads/2023/08/xpg-valor-mesh-rgb-beyaz-mid-tower-650w-80-white-gaming-kasa-y1-1-600x600.jpg', 'https://www.gaming.gen.tr/urun/336605/holmes-obito-intel-i5-12400f-asus-dual-geforce-rtx-4060-ti-oc-8gb-white-16gb-ram-500gb-m-2-ssd-gaming-bilgisayar/', '15999', 22120, 27]})
+print(a)

@@ -1,0 +1,10 @@
+
+hiç ürün bulunmadığı zaman için çözüm yap cimri
+https://www.akakce.com/arama/?q=Intel%20Core%20i3%2012100F%203.3GHz%2012MB%20%C3%96nbellek%204%20%C3%87ekirdek%20Soket%201700%2010nm%20%C4%B0%C5%9Flemci&c=1030
+
+Optimize the product names
+
+DB password: $tfm?M5qy$9D*$2
+
+
+add_image koduna aws bilgilerini gir. Şuan environmenttan çekiyor ama cloudda çekemez.

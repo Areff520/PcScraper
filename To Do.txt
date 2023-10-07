@@ -1,10 +1,11 @@
+Cimri fiyatları çok yükseltiyor
 
-hiç ürün bulunmadığı zaman için çözüm yap cimri
-https://www.akakce.com/arama/?q=Intel%20Core%20i3%2012100F%203.3GHz%2012MB%20%C3%96nbellek%204%20%C3%87ekirdek%20Soket%201700%2010nm%20%C4%B0%C5%9Flemci&c=1030
+psu'da eğerki ürün bulunamadı sorunu çıkıyor ise fiyatları düzenle https://www.gaming.gen.tr/urun/330198/cyber-4070ti-intel-i5-12400f-asus-rog-strix-geforce-rtx-4070-ti-12gb-16gb-ram-500gb-m-2-ssd-gaming-bilgisayar/
 
-Optimize the product names
+Sinerji görselleri boktan
 
-DB password: $tfm?M5qy$9D*$2
+OPTION - Chat Gpt'ye ürün isimlerini optimize et
 
+WARNING - Akakce.py ram kısmı sorun çıkarabilir ilerde
 
-add_image koduna aws bilgilerini gir. Şuan environmenttan çekiyor ama cloudda çekemez.
+WARNING - Akakçe psu fiyatı gelecekte sorun çıkarablir

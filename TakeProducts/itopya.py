@@ -2,9 +2,9 @@ import requests
 from bs4 import BeautifulSoup as bs4
 
 
-def get_itopya_products():
+def get_itopya_products_links():
     """Return product links in dictionary with price attached to it"""
-    result = requests.get('https://www.itopya.com/HazirSistemler/?sayfa=1&stok=stokvar')
+    result = requests.get('https://www.itopya.com/HazirSistemler?sayfa=1&stok=stokvar&maxFiyat=50000&minFiyat=7500')
     soup = bs4(result.content)
     page_count = soup.find('span', class_='page-info').find('strong')
     page_count = page_count.text.strip().split('/')
@@ -15,7 +15,7 @@ def get_itopya_products():
         retries = 0
         while retries < 3:
             try:
-                result = requests.get(f'https://www.itopya.com/HazirSistemler/?sayfa={page_number}&stok=stokvar')
+                result = requests.get(f'https://www.itopya.com/HazirSistemler?sayfa={page_number}&stok=stokvar&maxFiyat=50000&minFiyat=7500')
                 soup = bs4(result.content, features="html.parser")
                 product_list = soup.find(id='productList').find_all(class_='product')
                 for element in product_list:
@@ -29,7 +29,7 @@ def get_itopya_products():
             except:
                 retries += 1
 
-    print(f'Found {len(href_price_dict.keys())} products in Gaming Gen Tr')
+    print(f'Found {len(href_price_dict.keys())} products in İtopya\n\n')
     return href_price_dict
 
 
@@ -39,7 +39,6 @@ def check_itopya_details(href_dict):
 
     if product category out of stock then adds product_dict['status'] = 'skip'
 
-
     :returns
     products dict [main product_name]
     products dict has 1 dict and 1 image link inside, link  and 1 price tag
@@ -48,7 +47,7 @@ def check_itopya_details(href_dict):
     """
 
     products = {}
-    category_list = ['İşlemci', 'Anakart', 'Ekran Kartı']
+    category_list = ['işlemci', 'anakart', 'ekran kartı']
     for link, price in href_dict.items():
         status = True
         product_dict = {}
@@ -74,6 +73,7 @@ def check_itopya_details(href_dict):
                 elif product_category == 'powersupply':
                     product_category = 'güç'
 
+
                 if product_category != 'montaj ve kurulum':
                     product_dict[product_category] = title
             else:
@@ -93,3 +93,7 @@ def check_itopya_details(href_dict):
     print(products)
     return products
 
+def get_itopya_products():
+    links = get_itopya_products_links()
+    all_products_dict = check_itopya_details(links)
+    return all_products_dict

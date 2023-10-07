@@ -2,9 +2,9 @@ import requests
 from bs4 import BeautifulSoup as bs4
 
 
-def get_gaminggentr_products():
+def get_gaminggentr_products_links():
     """Returns all of the listing in the website"""
-    result = requests.get('https://www.gaming.gen.tr/kategori/hazir-sistemler/')
+    result = requests.get('https://www.gaming.gen.tr/kategori/hazir-sistemler')
     soup = bs4(result.content, features="html.parser")
     page_count_elements = soup.find_all('a', class_='page-numbers')
     page_count = page_count_elements[-2].text
@@ -15,7 +15,7 @@ def get_gaminggentr_products():
         retries = 0
         while retries < 3:
             try:
-                result = requests.get(f'https://www.gaming.gen.tr/kategori/hazir-sistemler/page/{page_number}/')
+                result = requests.get(f'https://www.gaming.gen.tr/kategori/hazir-sistemler/page/{page_number}')
                 soup = bs4(result.content, features="html.parser")
                 product_list = soup.find('ul', class_='products columns-3').find_all('a')
                 for element in product_list:
@@ -53,9 +53,10 @@ def check_gaminggentr_details(href_list):
                 print(price)
 
                 table_rows = soup.find(class_='su-table su-table-responsive su-table-alternate').find_all('tr')
-                for row in table_rows[2:]:
+                for row in table_rows[1:]:
                     row = row.find_all('td')
                     product_category = row[0].text.strip().lower()
+                    product_name = row[1].text.strip().lower()
                     if product_category == 'bilgisayar kasaları':
                         product_category = 'kasa'
                     elif product_category == 'sıvı soğutucu':
@@ -65,7 +66,7 @@ def check_gaminggentr_details(href_list):
                     elif product_category == 'güç kaynağı':
                         product_category = 'güç'
 
-                    product_dict[product_category] = row[1].text.strip()
+                    product_dict[product_category] = product_name
                 for key, value in product_dict.items():
                     print(f'{key}: {value}')
                 print(' ')
@@ -75,3 +76,8 @@ def check_gaminggentr_details(href_list):
                 retries += 1
 
     return products
+
+def get_gaminggentr_products():
+    links = get_gaminggentr_products_links()
+    all_products_dict = check_gaminggentr_details(links)
+    return all_products_dict

@@ -4,6 +4,10 @@ from io import BytesIO
 import boto3
 
 def download_and_resize_image(image_url, new_dimensions=(600, 600)):
+
+    #Changing Image size for sinerji products:
+    if 'sinerji' in image_url:
+        new_dimensions = (300, 600)
     # Download the image using requests
     response = requests.get(image_url)
     response.raise_for_status()  # Raise an HTTPError if the HTTP request returned an unsuccessful status code
@@ -55,3 +59,23 @@ def add_image(image_url,name):
     else:
         print('Image allready uploaded')
 
+
+def remove_image():
+    s3 = boto3.client('s3')
+
+    names = []
+    for pc_dict in dictionary_list:
+        names.append(list(pc_dict.keys())[0].replace('/', ','))
+    names = tuple(names)
+
+    objects = s3.list_objects_v2(Bucket='enhesaplipc', Prefix='pc_images/')
+
+    if 'Contents' in objects:
+        for obj in objects['Contents']:
+            # Get the object key, remove the folder name and '.jpg' extension to compare with the names in the dictionary
+            object_key_without_extension = obj['Key'][len('pc_images/'):].rsplit('.', 1)[0]
+
+            # If the name is not in the dictionary, delete the object from the bucket
+            if object_key_without_extension not in names:
+                print(f"Deleting {obj['Key']}")
+                s3.delete_object(Bucket='enhesaplipc', Key=obj['Key'])

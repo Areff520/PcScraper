@@ -201,6 +201,7 @@ def get_price_akakce(product_dict):
             print(f'Akakçe; Original price vs total price is {original_price} vs {total_price} and the difference is {original_price-total_price}')
 
 
+
     print(succesfull_dict)
     return succesfull_dict, unsuccesfull_dict
 

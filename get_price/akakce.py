@@ -155,12 +155,15 @@ def get_price_akakce(product_dict):
                             price = 5000
                         else:
                             price = 2000
+
                     #işlemci soğutucularda hata çıkartıyor
                     if 'için herhangi bir ürün bulunamadı.' in soup.get_text() and count_for_exception_akakce == 0:
                         product_name, link = exception_akakce(product_name=product_name, link=link, product_not_found=True)
                         count_for_exception_akakce += 1
                         assert False
-
+                    elif 'için herhangi bir ürün bulunamadı.' in soup.get_text() and count_for_exception_akakce > 0 and int(price) > 10000:
+                        print('THAT IS FALSE')
+                        status = False
                     total_price += int(price)
                     print(product_name, f' Retried {retries} times, Price: {price}')
                     category_name_string = category_name_string + f'{product_category}: {price}    '
@@ -183,6 +186,7 @@ def get_price_akakce(product_dict):
                             unsuccesfull_dict[product_main_name] = values
                             status = False
                             try_no_filter += 1
+                            print('STATUS FALSE')
                             break
                     if 'için herhangi bir ürün bulunamadı.' in soup.get_text() and try_no_filter == 0:
                         link = f'https://www.akakce.com/arama/?q={product_name}'

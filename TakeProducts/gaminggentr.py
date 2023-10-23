@@ -56,7 +56,7 @@ def check_gaminggentr_details(href_list):
                 for row in table_rows[1:]:
                     row = row.find_all('td')
                     product_category = row[0].text.strip().lower()
-                    product_name = row[1].text.strip().lower()
+                    product_name = row[1].text.strip()
                     if product_category == 'bilgisayar kasaları':
                         product_category = 'kasa'
                     elif product_category == 'sıvı soğutucu':

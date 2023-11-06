@@ -82,7 +82,7 @@ def get_price_akakce(product_dict):
             elif product_category == 'ekran kartı':
                 product_name = product_name.replace('geforce', '').replace('radeon', '')
                 pattern = re.compile(r'\d+\s*GB', re.IGNORECASE)
-                if ' oc' in product_name:
+                if ' oc' in product_name and 'galax' not in product_name.lower():
                     """Taking string before oc"""
                     product_name = (product_name.split('oc'))[0]
                 if pattern.search(product_name):
@@ -93,7 +93,14 @@ def get_price_akakce(product_dict):
                             split_count = index
                     for word in product_name_splitted[0:split_count]:
                         product_name += f'{word} '
-
+                if 'galax' in product_name:
+                    product_name_splitted = product_name.split()
+                    product_name = 'Galax '
+                    for index, word in enumerate(product_name_splitted):
+                        if 'rtx' in word:
+                            split_count = index
+                    for word in product_name_splitted[split_count:split_count+2]:
+                        product_name += f'{word} '
                 link = f'https://www.akakce.com/arama/?q={product_name}&c=1053'
 
             elif product_category == 'kasa':
@@ -172,12 +179,6 @@ def get_price_akakce(product_dict):
                 except:
 
                     if retries == 27:
-                        print('SCRAPERIO BEEN USED')
-                        params = {
-                            'api_key': 'b32f312c-cc84-450c-8810-ce60ee5d14cb',
-                            'url': f'{link}',
-                        }
-                        link = 'https://proxy.scrapeops.io/v1/'
                         header = give_header()
                     if 'için hiç ürün bulunamadı' in soup.get_text():
                         link = f'https://www.akakce.com/arama/?q={product_name}'

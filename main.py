@@ -24,7 +24,6 @@ def automation():
     gaminggentr_products = gaminggentr.get_gaminggentr_products()
     itopya_products = itopya.get_itopya_products()
     gamegaraj_products = gamegaraj.get_gamegaraj_products()
-    print(the_dict.checkpoint)
 
     all_products_dict = {}
     all_products_dict.update(pckolik_products)
@@ -36,17 +35,21 @@ def automation():
     untouched_all_products_dict = all_products_dict.copy()
     to_be_tested_dict = db_operations.check_if_same_exists_postgres(all_products_dict)
 
-    with open('dict_text.txt', 'w', encoding='utf-8') as file:
-        file.write(f'pckolik {len(pckolik_products)},sinerji_products {len(sinerji_products)},gaminggentr_products {len(gaminggentr_products)}\
-        , itopya_products {len(itopya_products)}, gamegaraj_products{len(gamegaraj_products)}\
-         \n\nuntouched_all_products_dict = {untouched_all_products_dict} \n all_products_dict = {all_products_dict}')
+    with open('the_dict.py', 'w', encoding='utf-8') as file:
+        file.write(f'pckolik = {len(pckolik_products)}\n')
+        file.write(f'sinerji_products = {len(sinerji_products)}\n')
+        file.write(f'gaminggentr_products = {len(gaminggentr_products)}\n')
+        file.write(f'itopya_products = {len(itopya_products)}\n')
+        file.write(f'gamegaraj_products = {len(gamegaraj_products)}\n\n')
+        file.write(f'untouched_all_products_dict = {untouched_all_products_dict}\n')
+        file.write(f'to_be_tested_dict = {to_be_tested_dict}\n')
 
     succesfull_dict, unsuccesfull_dict = akakce.get_price_akakce(to_be_tested_dict)
 
     to_be_updated_pc_list = calculate_worth(succesfull_dict)
-    with open('dict_text.txt', 'a', encoding='utf-8') as file:
-        file.write(f'\n\nsucessfull_dict = {succesfull_dict}\n\nto_be_updated_pc_list = {to_be_updated_pc_list}')
-    print(the_dict.checkpoint)
+    with open('the_dict.py', 'a', encoding='utf-8') as file:
+        file.write(f'\nsuccesfull_dict = {succesfull_dict}\n')
+        file.write(f'to_be_updated_pc_list = {to_be_updated_pc_list}\n')
 
     copy_updated_list = to_be_updated_pc_list.copy()
     #Updating images of succesfull products
@@ -67,9 +70,9 @@ def automation():
                 to_be_updated_pc_list.remove(pc_dict)
                 untouched_all_products_dict.pop(key)
                 print('REMOVED')
-        db_operations.populate_main_page_product_db(pc_dict)
     #Updating image of all products
-    for key, values in untouched_all_products_dict.items():
+    copy_untouched_all_products_dict = untouched_all_products_dict.copy()
+    for key, values in copy_untouched_all_products_dict.items():
         name = key
         image = values[1]
         if image is not None:
@@ -80,11 +83,12 @@ def automation():
         else:
             untouched_all_products_dict.pop(key)
             print('REMOVED')
+    for pc_dict in to_be_updated_pc_list:
+        db_operations.populate_main_page_product_db(pc_dict)
 
     additional_product_detail_tuples_list = make_additional_product_detail(untouched_all_products_dict)
     db_operations.populate_main_product_details_db(additional_product_detail_tuples_list)
     db_operations.delete_rows(untouched_all_products_dict)
     s3_storage.remove_image()
-
 
 automation()

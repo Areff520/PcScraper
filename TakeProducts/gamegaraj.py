@@ -4,6 +4,9 @@ from bs4 import BeautifulSoup as bs4
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 def get_gamegaraj_products_list():
     """Returns all of the listing in the website"""
@@ -37,7 +40,9 @@ def check_gamegaraj_details(href_list):
     """
     products = {}
     count = 0
-    driver = webdriver.Chrome()
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
+    driver = webdriver.Chrome(options=options)
 
     for href in href_list:
         retries = 0
@@ -57,6 +62,7 @@ def check_gamegaraj_details(href_list):
                     else:
                         page_loaded = False
                 print(main_title)
+                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME,'slick-track' )))
                 image = driver.find_element(By.CLASS_NAME, 'slick-track').find_elements(By.TAG_NAME, 'div')[1]\
                     .find_element(By.TAG_NAME, 'img').get_attribute('data-o_img')
                 print(image)
@@ -90,9 +96,9 @@ def check_gamegaraj_details(href_list):
                         continue
                     elif product_category == '' or product_title == '':
                         continue
-
-                    product_dict[product_category] = product_title
-                    print(product_category,':', product_title)
+                    if 'Yükleniyor…' not in product_title:
+                        product_dict[product_category] = product_title
+                        print(product_category,':', product_title)
                 products[main_title] = [product_dict, image, href, price]
                 count +=1
                 break

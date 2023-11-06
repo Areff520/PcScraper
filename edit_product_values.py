@@ -93,10 +93,13 @@ def make_additional_product_detail(product_dicts):
                                          if 'oc' not in word.lower() and 'gb' not in word.lower())
                     gpu_shortened = gpu_shortened.replace('RTX3060TI', 'RTX 3060 Ti').replace('RTX 4060TI', 'RTX 4060 Ti')\
                         .replace('RTX 4060TI', 'RTX 4060Ti').replace('RTX 3060 TI', 'RTX 3060 Ti')\
-                        .replace('RTX4070TI', 'RTX 4070 Ti').replace('RTX 4060 TI', 'RTX 4060 Ti')
+                        .replace('RTX4070TI', 'RTX 4070 Ti').replace('RTX 4060 TI', 'RTX 4060 Ti')\
+                        .replace('RTX4080', 'RTX 4080').replace('RTX4090', 'RTX 4090')
                     gpu_model = gpu_model.replace('RTX3060TI', 'RTX 3060 Ti').replace('RTX 4060TI', 'RTX 4060 Ti')\
                         .replace('RTX 4060TI', 'RTX 4060Ti').replace('RTX 3060 TI', 'RTX 3060 Ti')\
-                        .replace('RTX4070TI', 'RTX 4070 Ti').replace('RTX 4060 TI', 'RTX 4060 Ti')
+                        .replace('RTX4070TI', 'RTX 4070 Ti').replace('RTX 4060 TI', 'RTX 4060 Ti')\
+                        .replace('RTX4080', 'RTX 4080').replace('RTX4090', 'RTX 4090')
+
                 elif key == 'ram':
                     value_splitted = value.split(' ')
                     for word in value_splitted:

@@ -23,3 +23,11 @@ def exception_akakce(product_name, link='None', product_category='None', price=0
         return product_name, link
     return product_name, link
 
+def check_price(status, price_per_item, total_price):
+    if status:
+        for category, item_price in price_per_item.items():
+            if 'ekran kartı' not in category and item_price * 3 > total_price:
+                status = False
+                return status
+
+

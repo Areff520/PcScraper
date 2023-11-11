@@ -26,6 +26,9 @@ def make_additional_product_detail(product_dicts):
                 name_shortened = name.split('Oyun')[0]
             elif 'gamegaraj' in product_site:
                 name_shortened = name
+            if len(name_shortened) > 99 :
+                name_splitted = name.split(' ')
+                name_shortened = ' '.join(word for word in name_splitted[0:2])
             for key, value in product_details_dict.items():
                 if key == 'i̇şlemci' or key == 'işlemci':
                     value_splitted = value.split(' ')

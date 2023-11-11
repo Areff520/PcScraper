@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup as bs4
 from random import randint
 from .exceptions_akakce import exception_akakce
+from .exceptions_akakce import check_price
 import pandas as pd
 
 def give_header():
@@ -128,6 +129,7 @@ def get_price_akakce(product_dict):
             params = None
             link_changed = 'No'
             count_for_exception_akakce = 0
+            price_per_product = {}
             while retries < 30:
                 try:
                     result = requests.get(link, headers=header, params=params)
@@ -175,11 +177,10 @@ def get_price_akakce(product_dict):
                     print(product_name, f' Retried {retries} times, Price: {price}')
                     category_name_string = category_name_string + f'{product_category}: {price}    '
                     link_string = link_string + f'{link} '
+                    price_per_product[category_name_string] = int(price)
                     break
                 except:
 
-                    if retries == 27:
-                        header = give_header()
                     if 'için hiç ürün bulunamadı' in soup.get_text():
                         link = f'https://www.akakce.com/arama/?q={product_name}'
                         print('ÜRÜN BULUNAMADI')
@@ -196,6 +197,7 @@ def get_price_akakce(product_dict):
                 print('FAILED')
                 status = False
                 break
+        status = check_price(status, price_per_product, price)
         if status:
             new_values = values + [total_price]
             succesfull_dict[product_main_name] = new_values
@@ -204,7 +206,8 @@ def get_price_akakce(product_dict):
             result = 'price_tags.xlsx'
             df.to_excel(result, index=False)
             print(f'Akakçe; Original price vs total price is {original_price} vs {total_price} and the difference is {original_price-total_price}')
-
+        else:
+            unsuccesfull_dict[product_main_name] = values
 
 
     print(succesfull_dict)

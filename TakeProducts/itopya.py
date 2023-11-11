@@ -1,6 +1,16 @@
+import time
+
 import requests
 from bs4 import BeautifulSoup as bs4
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 
+
+def wait_for_page_load(driver, timeout=30):
+    WebDriverWait(driver, timeout).until(
+        lambda d: d.execute_script('return document.readyState') == 'complete'
+    )
 
 def get_itopya_products_links():
     """Return product links in dictionary with price attached to it"""
@@ -45,6 +55,9 @@ def check_itopya_details(href_dict):
     Inside dict has products[product_category] = [product_title]
 
     """
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
+    driver = webdriver.Chrome(options=options)
 
     products = {}
     category_list = ['işlemci', 'anakart', 'ekran kartı']
@@ -52,8 +65,11 @@ def check_itopya_details(href_dict):
         status = True
         product_dict = {}
         link = f'https://www.itopya.com{link}'
-        result = requests.get(link)
-        soup = bs4(result.content, features="html.parser")
+        print(link)
+        driver.get(link)
+        result = driver.page_source
+        wait_for_page_load(driver)
+        soup = bs4(result, features="html.parser")
         tables = soup.find('div', id='accordion-itopya').find_all('div', class_='card mb-3')
         image = soup.find(id='anaUrunResmi').get('src')
         main_title = soup.find('h6').text.strip()
@@ -81,19 +97,24 @@ def check_itopya_details(href_dict):
                 if product_category in category_list:
                     status = False
                     break
-
-
+        price = driver.find_element(By.CLASS_NAME, 'price.mt-3.mt-md-0').find_element(By.TAG_NAME, 'fiyatspan').text.strip().replace('.','').split(',')
+        if price == ['']:
+            result = driver.page_source
+            soup = bs4(result, features="html.parser")
+            soup_price = soup.find('fiyatspan')
+            price = soup_price.get_text().strip().replace('.','').split(',')
+        price = int(price[0])
         if status:
             products[main_title] = [product_dict, image, link, price]
             for key, value in product_dict.items():
                 print(f'{key}: {value}')
-            print(products)
             print(image, '\n')
 
-    print(products)
     return products
 
 def get_itopya_products():
     links = get_itopya_products_links()
+    #links = {'/spunkram-photoshopintel-core-i7-13700kasus-geforce-rtx-4070-ti-proart-oc-12gb16gb-ddr41tb-nvme-m_h24290':5}
     all_products_dict = check_itopya_details(links)
     return all_products_dict
+

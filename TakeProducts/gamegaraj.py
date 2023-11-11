@@ -40,6 +40,7 @@ def check_gamegaraj_details(href_list):
     """
     products = {}
     count = 0
+    except_count = 0
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
     driver = webdriver.Chrome(options=options)
@@ -54,19 +55,25 @@ def check_gamegaraj_details(href_list):
                 driver.get(href)
                 main_title = driver.find_element(By.CLASS_NAME, 'edgtf-single-product-title').text
 
-                page_loaded = True
-                while page_loaded:
-                    page_html = driver.find_element(By.TAG_NAME, 'body').get_attribute('outerHTML')
-                    if 'Yükleniyor…' in page_html:
+                page_not_loaded = True
+                while page_not_loaded:
+                    result = driver.page_source
+                    soup = bs4(result, features="html.parser")
+                    body = soup.find('body')
+
+                    if 'Yükleniyor' in body:
+                        print('YESS')
                         time.sleep(1)
                     else:
-                        page_loaded = False
+                        page_not_loaded = False
                 print(main_title)
                 WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME,'slick-track' )))
                 image = driver.find_element(By.CLASS_NAME, 'slick-track').find_elements(By.TAG_NAME, 'div')[1]\
                     .find_element(By.TAG_NAME, 'img').get_attribute('data-o_img')
                 print(image)
-                price_string = driver.find_element(By.CLASS_NAME, 'woocommerce-Price-amount').text.strip().replace('TL','').replace(',','')
+                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME,'slick-track' )))
+
+                price_string = driver.find_element(By.CLASS_NAME, 'composite_price').find_element(By.CLASS_NAME, 'woocommerce-Price-amount').text.strip().replace('TL','').replace(',','')
                 price = int(price_string)
 
                 tables = driver.find_elements(By.CLASS_NAME, 'composite_component')
@@ -74,37 +81,47 @@ def check_gamegaraj_details(href_list):
                 for row in tables:
                     """passing first two tables"""
                     product_category = row.find_element(By.CLASS_NAME, 'component_title_text').text.strip().lower()
-                    product_title = row.find_element(By.XPATH, ".//option[@selected='selected']").text
 
-                    if product_category == 'kasa/güç kaynağı':
-                        product_category = 'kasa'
-                    elif product_category == 'i̇şlemci':
-                        product_category = 'i̇şlemci'
-                    elif product_category == 'depolama m.2' or product_category =='depolama':
-                        product_category = 'ssd'
-                    elif 'ram' in product_category or product_category == 'bellek':
-                        product_category = 'ram'
-                    elif product_category == 'güç kaynağı' or product_category == 'güç kaynağı 2':
-                        product_category = 'güç'
-                    elif product_category == 'işlemci soğutucusu':
-                        product_category = 'soğutucu'
-                    elif product_category == 'ekran kartı':
-                        product_title = product_title.replace('RTX','RTX ').replace('RX', 'RX ').replace('XT', ' XT')\
-                            .replace('Ti', ' TI')
+                    if 'Yükleniyor…' not in row.text:
+                        try:
+                            product_title = row.find_element(By.XPATH, ".//option[@selected='selected']").text
 
-                    if product_title == 'Seçili Ürün Yok' or product_category == 'i̇şletim sistemi':
-                        continue
-                    elif product_category == '' or product_title == '':
-                        continue
-                    if 'Yükleniyor…' not in product_title:
-                        product_dict[product_category] = product_title
-                        print(product_category,':', product_title)
+                            if product_category == 'kasa/güç kaynağı':
+                                product_category = 'kasa'
+                            elif product_category == 'i̇şlemci':
+                                product_category = 'i̇şlemci'
+                            elif product_category == 'depolama m.2' or product_category =='depolama':
+                                product_category = 'ssd'
+                            elif 'ram' in product_category or product_category == 'bellek':
+                                product_category = 'ram'
+                            elif product_category == 'güç kaynağı' or product_category == 'güç kaynağı 2':
+                                product_category = 'güç'
+                            elif product_category == 'işlemci soğutucusu':
+                                product_category = 'soğutucu'
+                            elif product_category == 'ekran kartı':
+                                product_title = product_title.replace('RTX','RTX ').replace('RX', 'RX ').replace('XT', ' XT')\
+                                    .replace('Ti', ' TI')
+
+                            if product_title == 'Seçili Ürün Yok' or product_category == 'i̇şletim sistemi':
+                                continue
+                            elif product_category == '' or product_title == '':
+                                continue
+                            if 'Yükleniyor…' not in product_title:
+                                product_dict[product_category] = product_title
+                                print(product_category,':', product_title)
+                        except:
+                            except_count += 1
+                            print('EXCEPTIONNN')
+
+
+                print(price)
                 products[main_title] = [product_dict, image, href, price]
                 count +=1
                 break
             except:
                 retries += 1
                 traceback.print_exc()
+    print(except_count)
     driver.close()
 
     return products

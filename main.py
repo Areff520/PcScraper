@@ -13,7 +13,7 @@ from edit_product_values import make_additional_product_detail
 from get_price.difference import calculate_worth
 import asyncio
 import datetime
-
+import the_dict
 async def get_products():
     # Schedule all get product functions to run concurrently.
     tasks = [
@@ -27,6 +27,7 @@ async def get_products():
     return pckolik_products, sinerji_products, gaminggentr_products
 
 def automation():
+
     start_time = datetime.datetime.now()
     print('Started to work on Automation')
 
@@ -42,23 +43,23 @@ def automation():
 
     untouched_all_products_dict = all_products_dict.copy()
     to_be_tested_dict = db_operations.check_if_same_exists_postgres(all_products_dict)
+    #with open('the_dict.py', 'w', encoding='utf-8') as file:
+    #   file.write(f'pckolik = {len(pckolik_products)}\n')
+    #   file.write(f'sinerji_products = {len(sinerji_products)}\n')
+    #   file.write(f'gaminggentr_products = {len(gaminggentr_products)}\n')
+    #  file.write(f'itopya_products = {len(itopya_products)}\n')
+    #    file.write(f'gamegaraj_products = {len(gamegaraj_products)}\n\n')
+    #   file.write(f'untouched_all_products_dict = {untouched_all_products_dict}\n')
+    #   file.write(f'to_be_tested_dict = {to_be_tested_dict}\n')
 
-    with open('the_dict.py', 'w', encoding='utf-8') as file:
-        file.write(f'pckolik = {len(pckolik_products)}\n')
-        file.write(f'sinerji_products = {len(sinerji_products)}\n')
-        file.write(f'gaminggentr_products = {len(gaminggentr_products)}\n')
-        file.write(f'itopya_products = {len(itopya_products)}\n')
-        file.write(f'gamegaraj_products = {len(gamegaraj_products)}\n\n')
-        file.write(f'untouched_all_products_dict = {untouched_all_products_dict}\n')
-        file.write(f'to_be_tested_dict = {to_be_tested_dict}\n')
 
     succesfull_dict, unsuccesfull_dict = akakce.get_price_akakce(to_be_tested_dict)
 
     succesfull_to_be_updated = calculate_worth(succesfull_dict)
-    with open('the_dict.py', 'a', encoding='utf-8') as file:
-        file.write(f'\nsuccesfull_dict = {succesfull_dict}\n')
-        file.write(f'\nunsuccesfull_dict = {unsuccesfull_dict}\n')
-        file.write(f'succesfull_to_be_updated = {succesfull_to_be_updated}\n')
+    #with open('the_dict.py', 'a', encoding='utf-8') as file:
+    #    file.write(f'\nsuccesfull_dict = {succesfull_dict}\n')
+    #    file.write(f'\nunsuccesfull_dict = {unsuccesfull_dict}\n')
+    #    file.write(f'succesfull_to_be_updated = {succesfull_to_be_updated}\n')
 
     #Updating image of all products
     copy_untouched_all_products_dict = untouched_all_products_dict.copy()
@@ -74,8 +75,8 @@ def automation():
             print('Image allready updated, passing')
 
     additional_product_detail_tuples_list = make_additional_product_detail(untouched_all_products_dict)
-    with open('the_dict.py', 'a', encoding='utf-8') as file:
-        file.write(f'\nadditional_product_detail_tuples_list = {additional_product_detail_tuples_list}\n')
+    #with open('the_dict.py', 'a', encoding='utf-8') as file:
+    #    file.write(f'\nadditional_product_detail_tuples_list = {additional_product_detail_tuples_list}\n')
 
     for key, values in succesfull_to_be_updated.items():
         db_operations.populate_main_page_product_db(key, values)
@@ -89,7 +90,9 @@ def automation():
 
     db_operations.populate_main_product_details_db(additional_product_detail_tuples_list)
     db_operations.change_is_stock_available(untouched_all_products_dict)
+    db_operations.update_only_price(untouched_all_products_dict)
     #s3_storage.remove_image()
     print(f'Started at {start_time} and finished at {datetime.datetime.now()}.')
     print(f'Found {len(succesfull_dict.keys()) + len(unsuccesfull_dict.keys())}')
+
 automation()

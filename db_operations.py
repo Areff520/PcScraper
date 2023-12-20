@@ -95,11 +95,11 @@ def populate_main_page_product_db(key, values):
     cursor = conn.cursor()
 
     if int(price) > 10000 and difference > -50:
-
+        print('YES')
         # SQL query with ON CONFLICT for upsert operation
         cursor.execute('''
-        INSERT INTO main_page_product (name, price, old_price, difference, image, added_date, details, link, site, is_stock_available) 
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO main_page_product (name, price, old_price, difference, image, details, link, site, is_stock_available) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (name)
         DO UPDATE SET 
             price = EXCLUDED.price,
@@ -109,10 +109,11 @@ def populate_main_page_product_db(key, values):
             details = EXCLUDED.details,
             link = EXCLUDED.link,
             site = EXCLUDED.site,
-            is_stock_available = EXCLUDED.is_stock_available;
-        ''', (name, price, old_price, difference, image, added_date, details, link, site, is_stock_available))
+            is_stock_available = EXCLUDED.is_stock_available,
+        ''', (name, price, old_price, difference, image, details, link, site, is_stock_available))
 
     elif difference < -50:
+        print('NO')
         cursor.execute('''
         INSERT INTO exception_products (name, price, old_price, difference, image, added_date, details, link, site) 
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -157,6 +158,8 @@ def change_is_stock_available(all_products_dict):
     cursor = conn.cursor()
     query = sql.SQL("UPDATE main_page_product SET is_stock_available = %s WHERE name NOT IN %s")
     cursor.execute(query, (False, names))
+    query = sql.SQL("UPDATE main_page_product SET is_stock_available = %s WHERE name IN %s")
+    cursor.execute(query, (True, names))
     conn.commit()
     conn.close()
 
@@ -300,4 +303,33 @@ def temp_fix_column(pc_dicts):
             ''', (image, name))
         print('INSERTED')
         conn.commit()
+    conn.close()
+
+def update_only_price(untouched_all_products_dict):
+    """Change the row that do not contain the name in the dictionary. These rows are old and outdated, so the stock set to False
+    Website will not display these rows
+    Takes:
+    list
+    dict
+    """
+    print('Updating only price')
+    DATABASE_URL = os.environ.get('HEROKU_DB_URL')
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    cursor = conn.cursor()
+
+    count = 0
+    for key, values in untouched_all_products_dict.items():
+        try:
+            count += 1
+            name = key
+            price = values[3]
+
+            query = sql.SQL("UPDATE main_page_product SET price = %s WHERE name = %s")
+            cursor.execute(query, (price, name))
+            conn.commit()
+
+        except:
+            print(traceback.print_exc())
+
+    cursor.close()
     conn.close()

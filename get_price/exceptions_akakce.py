@@ -27,7 +27,12 @@ def check_price(status, price_per_item, total_price):
     if status:
         for category, item_price in price_per_item.items():
             if 'ekran kartı' not in category and item_price * 3 > total_price:
+                print(f'{category}: {item_price}TL and total price is {total_price}TL')
                 status = False
                 return status
+
+
+    return status
+
 
 

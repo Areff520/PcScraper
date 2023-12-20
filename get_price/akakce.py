@@ -198,13 +198,14 @@ def get_price_akakce(product_dict):
                 status = False
                 break
         status = check_price(status, price_per_product, price)
+        print(status)
         if status:
             new_values = values + [total_price]
             succesfull_dict[product_main_name] = new_values
             new_row = {"name": product_main_name, "price": category_name_string, "link": link_string,"total price": total_price, "diff":original_price-total_price, "original price":original_price}
             df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
             result = 'price_tags.xlsx'
-            df.to_excel(result, index=False)
+            #df.to_excel(result, index=False)
             print(f'Akakçe; Original price vs total price is {original_price} vs {total_price} and the difference is {original_price-total_price}')
         else:
             unsuccesfull_dict[product_main_name] = values

@@ -69,7 +69,7 @@ async def check_sinerji_details(href_list):
                 tables = soup.find_all(class_='row preBuiltPcCategory')
                 product_dict = {}
                 for table in tables[2:]:
-                    product_category = table.find('h3').get_text().strip().lower()
+                    product_category = table.find('p').get_text().strip().lower()
                     rows = table.find_all(class_='preBuiltPcProduct')
                     for row in rows:
                         if row.get('data-isdefault') == 'true':

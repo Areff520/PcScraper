@@ -62,7 +62,7 @@ async def check_gaminggentr_details(href_list,dict_start_count,dict_end_count):
                     print(main_title)
                     image = soup.find(class_='woocommerce-product-gallery__image').find('img').get('data-src')
                     print(image)
-                    price = soup.find('ins').find(class_='woocommerce-Price-amount amount').text.strip().replace('.',
+                    price = soup.find(class_='price').find('ins').find(class_='woocommerce-Price-amount amount').text.strip().replace('.',
                                                                                                                  '').split(
                         ",")
                     price = price[0]
@@ -114,3 +114,4 @@ async def get_gaminggentr_products():
     all_products_dict = product_dict_1
 
     return all_products_dict
+

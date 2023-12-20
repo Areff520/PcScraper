@@ -106,9 +106,11 @@ def check_gamegaraj_details(href_list):
                                 continue
                             elif product_category == '' or product_title == '':
                                 continue
-                            if 'Yükleniyor…' not in product_title:
-                                product_dict[product_category] = product_title
-                                print(product_category,':', product_title)
+                            if 'Yükleniyor…' not in product_title and 'kasa fanı' not in product_category and 'kasa arka fanı' not in product_category\
+                                    and 'arka fan' not in product_category:
+
+                                    product_dict[product_category] = product_title
+                                    print(product_category,':', product_title)
                         except:
                             except_count += 1
                             print('EXCEPTIONNN')

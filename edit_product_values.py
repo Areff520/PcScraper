@@ -26,7 +26,7 @@ def make_additional_product_detail(product_dicts):
                 name_shortened = name.split('Oyun')[0]
             elif 'gamegaraj' in product_site:
                 name_shortened = name
-            if len(name_shortened) > 99 :
+            if len(name_shortened) > 99:
                 name_splitted = name.split(' ')
                 name_shortened = ' '.join(word for word in name_splitted[0:2])
             for key, value in product_details_dict.items():
@@ -38,7 +38,7 @@ def make_additional_product_detail(product_dicts):
                             break
                     cpu_shortened = ' '.join(word for word in value_splitted[0:split_index+1])
                     #First two word start with uppercase and other words are fully upper case
-                    input_string  = ' '.join(word for word in value_splitted[0:split_index+1]
+                    input_string = ' '.join(word for word in value_splitted[0:split_index+1]
                                          if '.' not in word and 'ghz' not in word.lower())
                     input_string = input_string.replace('-', ' ')
                     words = input_string.split()
@@ -47,7 +47,11 @@ def make_additional_product_detail(product_dicts):
                         words[1] = words[1].capitalize()
                     formatted_string = ' '.join(words)
                     cpu_model = formatted_string
-                    cpu_model = cpu_model.replace('MPK', '').replace('Core', '').replace('Amd', '')
+                    cpu_model = cpu_model.replace('MPK', '').replace('Core', '').replace('Amd', '').strip()
+                    #Removing all kinds of white space
+                    cpu_model = re.sub(r"^\s+|\s+$", "", cpu_model)
+                    print(name_shortened)
+                    print(f"it is  '{cpu_model}'")
                 elif key == 'anakart':
                     pattern = re.compile(r'(?=.*[a-zA-Z])(?=.*\d)')
                     value_splitted = value.split(' ')
@@ -61,6 +65,9 @@ def make_additional_product_detail(product_dicts):
                     motherboard_shortened = motherboard_shortened.replace('DDR4 DDR4', 'DDR4')
                     motherboard_model = motherboard_model.replace('DDR4 DDR4', 'DDR4')
                 elif key == 'ekran kartı':
+                    #Removing typo additional spaces
+                    value = ' '.join(value.split())
+
                     value_splitted = value.split(' ')
                     brand = ''
                     ti_info = ''
@@ -101,7 +108,8 @@ def make_additional_product_detail(product_dicts):
                     gpu_model = gpu_model.replace('RTX3060TI', 'RTX 3060 Ti').replace('RTX 4060TI', 'RTX 4060 Ti')\
                         .replace('RTX 4060TI', 'RTX 4060Ti').replace('RTX 3060 TI', 'RTX 3060 Ti')\
                         .replace('RTX4070TI', 'RTX 4070 Ti').replace('RTX 4060 TI', 'RTX 4060 Ti')\
-                        .replace('RTX4080', 'RTX 4080').replace('RTX4090', 'RTX 4090')
+                        .replace('RTX4080', 'RTX 4080').replace('RTX4090', 'RTX 4090').replace('ARC', 'Arc')
+
 
                 elif key == 'ram':
                     value_splitted = value.split(' ')
@@ -143,6 +151,10 @@ def make_additional_product_detail(product_dicts):
                                                    'motherboard_shortened': motherboard_shortened, 'motherboard_model': motherboard_model,
                                                    'ram_shortened': ram_shortened, 'ram_speed': ram_speed, 'ram_capacity': ram_capacity,
                                                    'ssd_shortened': ssd_shortened, 'ssd_capacity': ssd_capacity}
+            print('\n\n')
+            print(name, values)
+            for key, value in additional_product_detail_dict[name].items():
+                print(f'{key} : {value}')
             additional_product_detail_tuples_list.append((name, name_shortened, cpu_shortened, cpu_model, gpu_shortened, gpu_model,
                                                          motherboard_shortened, motherboard_model, ram_shortened, ram_speed, ram_capacity,
                                                          ssd_shortened, ssd_capacity))
